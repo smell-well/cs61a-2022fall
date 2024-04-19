@@ -1,0 +1,5 @@
+'num_eights-correct', (0, 70)
+'pingpong-correct', (512, 70)
+'count_coins-correct', (1024, 70)
+'beaver_syntax_check-correct', (1536, 70)
+'beaver_run_test-correct', (2048, 70)
