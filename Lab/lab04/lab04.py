@@ -20,6 +20,11 @@ def summation(n, term):
     """
     assert n >= 1
     "*** YOUR CODE HERE ***"
+    def helper(i, term):
+        if i <= n:
+            return term(i) + helper(i + 1, term)
+        return 0
+    return helper(1, term)
 
 
 def pascal(row, column):
@@ -35,7 +40,13 @@ def pascal(row, column):
     6
     """
     "*** YOUR CODE HERE ***"
-
+    # 不存在
+    if column > row:
+        return 0
+    # 左右两端
+    if column == 0 or row == column:
+        return 1
+    return pascal(row - 1, column - 1) + pascal(row - 1, column)
 
 def paths(m, n):
     """Return the number of paths from one corner of an
@@ -51,6 +62,15 @@ def paths(m, n):
     1
     """
     "*** YOUR CODE HERE ***"
+    def helper(i, j):
+        if i == m and j == n:
+            return 1
+        elif i == m:
+            return helper(i, j + 1)
+        elif j == n:
+            return helper(i + 1, j)
+        return helper(i + 1, j) + helper(i, j + 1)
+    return helper(1, 1)
 
 
 def couple(s, t):
@@ -67,6 +87,7 @@ def couple(s, t):
     """
     assert len(s) == len(t)
     "*** YOUR CODE HERE ***"
+    return [[s[i], t[i]] for i in range(len(s))]
 
 
 def double_eights(n):
@@ -91,6 +112,18 @@ def double_eights(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    def helper(n, last):
+        if n == 0:
+            return False
+        digit = n % 10
+        if digit == 8:
+            if last:
+                return True
+            else:
+                return helper(n // 10, True)
+        return helper(n // 10, False)
+    return helper(n, False)
+        
 
 
 def coords(fn, seq, lower, upper):
@@ -101,7 +134,7 @@ def coords(fn, seq, lower, upper):
     [[-2, 4], [1, 1], [3, 9]]
     """
     "*** YOUR CODE HERE ***"
-    return ______
+    return [[x, fn(x)] for x in seq if fn(x) >= lower and fn(x) <= upper]
 
 
 def riffle(deck):
@@ -114,4 +147,4 @@ def riffle(deck):
     [0, 10, 1, 11, 2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19]
     """
     "*** YOUR CODE HERE ***"
-    return _______
+    return [deck[(len(deck) // 2) * (i % 2) + i // 2] for i in range(len(deck))]
