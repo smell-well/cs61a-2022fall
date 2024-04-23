@@ -164,6 +164,24 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if typed_word in word_list:
+        return typed_word
+    
+    min_diff = limit + 1
+    res = typed_word
+    for word in word_list:
+        # if typed_word == word:
+        #     print("DEBUG:" + typed_word + " " + word)
+        #     return typed_word
+        diff = diff_function(typed_word, word, limit)
+        # print("DEBUG:" + typed_word + " " + word + ", diff " + str(diff))
+        if diff < min_diff:
+            min_diff = diff
+            res = word
+    # limit 为浮点数时
+    if min_diff > limit:
+        return typed_word
+    return res
     # END PROBLEM 5
 
 
@@ -190,7 +208,13 @@ def feline_fixes(typed, source, limit):
     5
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    n = len(typed)
+    m = len(source)
+    def helper(i, cnt):
+        if cnt > limit or i == n or i == m:
+            return cnt
+        return helper(i + 1, cnt + (1 if typed[i] != source[i] else 0))
+    return helper(0, abs(n - m))
     # END PROBLEM 6
 
 
@@ -209,28 +233,88 @@ def minimum_mewtations(start, goal, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    assert False, 'Remove this line'
-    if ______________:  # Fill in the condition
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-    elif ___________:  # Feel free to remove or add additional cases
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-    else:
-        add = ...  # Fill in these lines
-        remove = ...
-        substitute = ...
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-
+    n = len(start)
+    m = len(goal)
+    def helper(i, j, need):
+        if need > limit:
+            return need
+        if i == -1:
+            return need + j + 1
+        elif j == -1:
+            return need + i + 1
+        else:
+            add = helper(i, j - 1, need + 1)
+            remove = helper(i - 1, j, need + 1)
+            substitute = helper(i - 1, j - 1, need + (0 if start[i] == goal[j] else 1))
+            res = min(add, remove, substitute)
+            return res
+    return helper(n - 1, m - 1, 0)
+            
 
 def final_diff(typed, source, limit):
     """A diff function that takes in a string TYPED, a string SOURCE, and a number LIMIT.
     If you implement this function, it will be used."""
-    assert False, 'Remove this line to use your final_diff function.'
+    # minimum_mewtations （baseline） Acc 71.3%
+    # Correction Speed: 320.82898348246624 wpm
+    # Correctly Corrected: 172 words
+    # Incorrectly Corrected: 54 words
+    # Uncorrected: 15 words
+
+    # 增加一条规则，相同字母变大写不会增加次数 Acc 70.1% (不理想)
+    # Correction Speed: 277.27331101660457 wpm
+    # Correctly Corrected: 146 words
+    # Incorrectly Corrected: 40 words
+    # Uncorrected: 22 words
+
+    # 仅对首字母 Acc 69.0% 
+    # Correction Speed: 326.42717092195034 wpm
+    # Correctly Corrected: 169 words
+    # Incorrectly Corrected: 46 words
+    # Uncorrected: 30 words
+
+    # 全大写校验 Acc 68.9%
+    # Correction Speed: 341.9772880314324 wpm
+    # Correctly Corrected: 177 words
+    # Incorrectly Corrected: 59 words
+    # Uncorrected: 21 words
+    
+    # 首字母大写 + 全大写校验 Acc 75.7%
+    # Correction Speed: 279.17753688419293 wpm
+    # Correctly Corrected: 159 words
+    # Incorrectly Corrected: 39 words
+    # Uncorrected: 12 words
+
+    # 首字母大写 + 全大写校验 Acc 77.1%
+    # Correction Speed: 301.4019370010115 wpm
+    # Correctly Corrected: 175 words
+    # Incorrectly Corrected: 37 words
+    # Uncorrected: 15 words    
+    
+    # 全大小写校验
+    if typed.lower == source or typed.upper == source:
+        return 0
+    n = len(typed)
+    m = len(source)
+    def helper(i, j, need):
+        if need > limit:
+            return need
+        if i == -1:
+            return need + j + 1
+        elif j == -1:
+            return need + i + 1
+        else:
+            add = helper(i, j - 1, need + 1)
+            remove = helper(i - 1, j, need + 1)
+            # 首字母大写
+            if typed[i] == source[j] or (i == 0 and j == 0 and typed[i].upper == source[j]):
+                substitute = helper(i - 1, j - 1, need)
+            else:
+                substitute = helper(i - 1, j - 1, need + 1)
+            res = min(add, remove, substitute)
+            return res
+
+    return helper(n - 1, m - 1, 0)
+
 
 
 FINAL_DIFF_LIMIT = 6  # REPLACE THIS WITH YOUR LIMIT
@@ -265,7 +349,17 @@ def report_progress(typed, prompt, user_id, upload):
     0.2
     """
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    n = len(prompt)
+    progress = 0.0
+    # print("DEBUG:", len(typed))
+    for i in range(len(typed)):
+        if typed[i] != prompt[i]:
+            # print("DEBUG:", i, typed[i], prompt[i])
+            break
+        progress = (i + 1) / n
+    msg = {'id': user_id, 'progress': progress}
+    upload(msg)
+    return progress
     # END PROBLEM 8
 
 
@@ -287,7 +381,10 @@ def time_per_word(words, times_per_player):
     [[6, 3, 6, 2], [10, 6, 1, 2]]
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    diff = [[player[i] -  player[i - 1] for i in range(1, len(player))] \
+         for player in times_per_player]
+    res = match(words, diff)
+    return res
     # END PROBLEM 9
 
 
@@ -309,7 +406,18 @@ def fastest_words(match):
     player_indices = range(len(get_all_times(match)))  # contains an *index* for each player
     word_indices = range(len(get_all_words(match)))    # contains an *index* for each word
     # BEGIN PROBLEM 10
-    "*** YOUR CODE HERE ***"
+    playlist = [[] for _ in player_indices]    
+    for i in word_indices:
+        word = get_word(match, i)
+        fast_player_id = 0
+        fast_time = time(match, fast_player_id, i)
+        for j in player_indices:
+            temp_time = time(match, j, i)
+            if temp_time < fast_time:
+                fast_player_id = j
+                fast_time = temp_time
+        playlist[fast_player_id].append(word)
+    return playlist
     # END PROBLEM 10
 
 
@@ -361,7 +469,7 @@ def match_string(match):
     return f"match({match['words']}, {match['times']})"
 
 
-enable_multiplayer = False  # Change to True when you're ready to race.
+enable_multiplayer = True  # Change to True when you're ready to race.
 
 ##########################
 # Command Line Interface #
