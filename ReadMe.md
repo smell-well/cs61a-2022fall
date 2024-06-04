@@ -1,5 +1,9 @@
 ## 目录
 
+- Hw
+- Lab
+- Proj
+- Record：对于完成课程内容中遇到的一些难点的记录。
 #### hw
 - [x] HW 01: Functions, Control ✅ 2024-04-22
 - [x] HW 02: Higher-Order Functions ✅ 2024-04-22
