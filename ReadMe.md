@@ -1,8 +1,6 @@
-## 目录
+## 目录说明
 
-- Hw
-- Lab
-- Proj
+- Hw/source、Lab/source、Proj/source：课程的压缩包
 - Record：对于完成课程内容中遇到的一些难点的记录。
 #### hw
 - [x] HW 01: Functions, Control ✅ 2024-04-22
